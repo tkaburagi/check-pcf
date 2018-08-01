@@ -1,0 +1,166 @@
+resources:
+- name: hourly-check
+  type: time
+  source:
+    interval: 1h
+jobs:
+  - name: Prometheus
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            grafana: {{grafana}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $grafana
+  - name: 'Application Service'
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            pasapi: {{pasapi}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $pasapi
+  - name: 'Container Service'
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            pks: {{pksapi}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $pksapi
+  - name: Healthwatch
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            hw: {{hw}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $hw
+  - name: Harbor
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            harbor: {{harbor}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $harbor
+  - name: 'Ops Manager'
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            opsman: {{opsman}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $opsman
+  - name: 'PCF Metrics'
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            metrics: {{metrics}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $metrics
+  - name: 'Redis Broker'
+    plan:
+    - get: hourly-check
+      trigger: true
+    - task: ping
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/cf-uaac
+            tag: latest
+        params:
+            redis: {{redis}}
+        run:
+          path: sh
+          args:
+          - -c
+          - |
+            ping -c 5 $redis
