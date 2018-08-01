@@ -8,14 +8,13 @@ jobs:
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
-            tag: latest
+            repository: appropriate/curl
         params:
             grafana: {{grafana}}
         run:
@@ -23,18 +22,30 @@ jobs:
           args:
           - -c
           - |
-            curl $grafana
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI $grafana -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: 'Application Service'
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             pasapi: {{pasapi}}
@@ -43,38 +54,62 @@ jobs:
           args:
           - -c
           - |
-            curl $pasapi
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI $pasapi -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: 'Container Service'
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
-            pks: {{pksapi}}
+            pksapi: {{pksapi}}
         run:
           path: sh
           args:
           - -c
           - |
-            curl $pksapi
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI https://$pksapi --insecure -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: Healthwatch
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             hw: {{hw}}
@@ -83,18 +118,30 @@ jobs:
           args:
           - -c
           - |
-            curl $hw
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI $hw -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: Harbor
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             harbor: {{harbor}}
@@ -103,7 +150,19 @@ jobs:
           args:
           - -c
           - |
-            curl $harbor
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl $harbor -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: 'Ops Manager'
     plan:
     - get: hourly-check
@@ -114,7 +173,7 @@ jobs:
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             opsman: {{opsman}}
@@ -128,13 +187,13 @@ jobs:
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             metrics: {{metrics}}
@@ -143,18 +202,30 @@ jobs:
           args:
           - -c
           - |
-            curl $metrics
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI https://$metrics --insecure -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
   - name: 'Redis Broker'
     plan:
     - get: hourly-check
       trigger: true
-    - task: ping
+    - task: curl
       config:
         platform: linux
         image_resource:
           type: docker-image
           source:
-            repository: governmentpaas/cf-uaac
+            repository: appropriate/curl
             tag: latest
         params:
             redis: {{redis}}
@@ -163,4 +234,16 @@ jobs:
           args:
           - -c
           - |
-            curl $redis
+            i=0
+            while [[ $i -ne 10 ]]; do
+              code=`curl -LI $redis -o /dev/null -w '%{http_code}\n' -s`;
+              if [[ ${code} = "200" ||  ${code} = "401" ]]; then
+                  echo ${code};
+                echo "ok";
+              else
+                echo "abort!!";
+                exit 1
+              fi
+              i=`expr $i + 1`;
+              sleep 1;
+            done
