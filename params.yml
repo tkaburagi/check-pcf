@@ -1,7 +1,7 @@
 pasapi: api.sys.pcflab.jp
 pksapi: api.pks.pcflab.jp
-grafana: grafana.pcflab.jp
-hw: healthwatch.sys.pcfla.jp
+grafana: grafana.pcflab.jp:3000
+hw: healthwatch.sys.pcflab.jp
 harbor: harbor.pcflab.jp
 opsman: opsmanager.pcflab.jp
 metrics: metrics.sys.pcflab.jp

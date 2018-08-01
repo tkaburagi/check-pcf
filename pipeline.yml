@@ -23,7 +23,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $grafana
+            curl $grafana
   - name: 'Application Service'
     plan:
     - get: hourly-check
@@ -43,7 +43,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $pasapi
+            curl $pasapi
   - name: 'Container Service'
     plan:
     - get: hourly-check
@@ -63,7 +63,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $pksapi
+            curl $pksapi
   - name: Healthwatch
     plan:
     - get: hourly-check
@@ -83,7 +83,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $hw
+            curl $hw
   - name: Harbor
     plan:
     - get: hourly-check
@@ -103,7 +103,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $harbor
+            curl $harbor
   - name: 'Ops Manager'
     plan:
     - get: hourly-check
@@ -143,7 +143,7 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $metrics
+            curl $metrics
   - name: 'Redis Broker'
     plan:
     - get: hourly-check
@@ -163,4 +163,4 @@ jobs:
           args:
           - -c
           - |
-            ping -c 5 $redis
+            curl $redis
